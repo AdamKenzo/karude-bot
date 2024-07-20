@@ -7,7 +7,7 @@ def get_response(user_input: str) -> str:
 
     if lowered == '':
         return 'Bom, você está terrivelmente silencioso'
-    elif '!karudê' in lowered:
+    elif '!karude' in lowered:
         if 'falas' in lowered:
             return ('Opa, eu consigo responder: bom dia | você esta? | tu esta? |'
                     'ouvindo |está bem? |esta fazendo? | oi |'
@@ -17,11 +17,11 @@ def get_response(user_input: str) -> str:
             return ('Opa, os comandos que eu aprendi, são: falas | d6 | d20 | d100 | comandos\n'
                     'Qualquer ideia de implementação ou melhoria, fale com os meus desenvolvedores OwO')
         elif 'd20' in lowered:
-            return  f'O d20 deu: {randint(1,20)}'
+            return  f'd20🎲 deu {randint(1,20)}'
         elif 'd100' in lowered:
-            return  f'O d100 deu: {randint(1,100)}'
+            return  f'd100🎲 deu {randint(1,100)}'
         elif 'd6' in lowered:
-            return  f'O d6 deu: {randint(1,6)}'
+            return  f'd6🎲 deu {randint(1,6)}'
     elif 'karudê' in lowered:
         if 'bom dia' in lowered:
             return choice(['Bom diaaa! S2',

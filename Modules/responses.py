@@ -1,27 +1,40 @@
 from random import choice, randint
+from discord import Message
+from discord.ext import commands
+import discord
 
+async def on_message(message: Message) -> None:
+    # Ignorar mensagens do próprio bot
+    if message.author == message.guild.me:
+        return
 
+    user_message = message.content
+
+    # Verifica se a mensagem está vazia
+    if not user_message:
+        print('(A mensagem estava vazia porque as intenções provavelmente não estavam ativadas)')
+        return
+
+    response = get_response(user_message)
+
+    # Verifica se a resposta é None ou uma string vazia
+    if response and response.strip():
+        try:
+            await message.channel.send(response)
+        except discord.errors.HTTPException as e:
+            # Log específico para erro HTTP
+            print(f'Erro HTTP ao enviar mensagem: {e}')
+        except Exception as e:
+            # Log para outros tipos de erros
+            print(f'Erro ao enviar mensagem: {e}')
+    else:
+        print('(Resposta vazia não enviada)')
 
 def get_response(user_input: str) -> str:
-    lowered: str = user_input.lower()
+    lowered = user_input.lower()
 
     if lowered == '':
         return 'Bom, você está terrivelmente silencioso'
-    elif '!karude' in lowered:
-        if 'falas' in lowered:
-            return ('Opa, eu consigo responder: bom dia | você esta? | tu esta? |'
-                    'ouvindo |está bem? |esta fazendo? | oi |'
-                    'tudo bem? | tchau | academia | trilha favorita \n'
-                    'Qualquer ideia de implementação ou melhoria, fale com os meus desenvolvedores OwO')
-        elif 'comandos' in lowered:
-            return ('Opa, os comandos que eu aprendi, são: falas | d6 | d20 | d100 | comandos\n'
-                    'Qualquer ideia de implementação ou melhoria, fale com os meus desenvolvedores OwO')
-        elif 'd20' in lowered:
-            return  f'd20🎲 deu {randint(1,20)}'
-        elif 'd100' in lowered:
-            return  f'd100🎲 deu {randint(1,100)}'
-        elif 'd6' in lowered:
-            return  f'd6🎲 deu {randint(1,6)}'
     elif 'karudê' in lowered:
         if 'bom dia' in lowered:
             return choice(['Bom diaaa! S2',
@@ -71,7 +84,7 @@ def get_response(user_input: str) -> str:
                            'De buenas',
                            'Watashi wa genkidesu'])
         elif 'esta fazendo?' in lowered:
-            return choice(['Estou programando :actually:',
+            return choice(['Estou programando <:actually:1263690743864758395>',
                            'Escutando Twice ❤❤❤',
                            'Passando raiva no vava'])
         elif 'oi' in lowered:
@@ -85,7 +98,6 @@ def get_response(user_input: str) -> str:
             return choice(['Até ;)',
                            'Bye bye',
                            'Sayōnara'])
-
         elif 'gosta de valorant' in lowered:
             return choice(['Amo, mas odeio S2',
                            'A mãe é main Jet, sou melhor que o Aspas (○｀ 3′○)',
@@ -98,6 +110,11 @@ def get_response(user_input: str) -> str:
             return 'Não tenho uma trilha favorita, mas por algum motivo, gosto muito de python ;)'
         else:
             return choice(['Não manjo o que tu falou ＞﹏＜, se tiver alguma duvida, sobre o que eu '
-                           'respondo: !Karudê falas',
-                           'Que bagulho doido é esse? （︶^︶）Se tem duvida, digite: !Karudê falas',
-                           'Cara, não ablo isso não (╬▔皿▔)╯, só digite: !Karudê falas'])
+                           'respondo: !Karude falas',
+                           'Que bagulho doido é esse? （︶^︶）Se tem duvida, digite: !Karude falas',
+                           'Cara, não ablo isso não (╬▔皿▔)╯, só digite: !Karude falas'])
+
+    return ''
+
+def setup(bot: commands.Bot):
+    bot.add_listener(on_message, 'on_message')

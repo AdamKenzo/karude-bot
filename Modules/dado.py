@@ -1,46 +1,76 @@
-from random import choice, randint
+from random import randint
 from discord.ext import commands
 import discord
-# Define o comando
-@commands.command(name='d')
-async def dado_command(ctx, *args):
-    user_message = ' '.join(args)
-    response = get_response(user_message)
 
-    # Verifica se a resposta é válida
-    if response and response.strip():
-        try:
-            await ctx.send(response)
-        except discord.errors.HTTPException as e:
-            # Log específico para erro HTTP
-            print(f'Erro HTTP ao enviar mensagem: {e}')
-        except Exception as e:
-            # Log para outros tipos de erros
-            print(f'Erro ao enviar mensagem: {e}')
-    else:
-        print('(Resposta vazia não enviada)')
+class Dado(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-def get_response(user_input: str) -> str:
-    lowered = user_input.lower()
+    @commands.command(name='dado')
+    async def dado_command(self, ctx, *args):
+        user_message = ' '.join(args)
+        embed = self.get_response_embed(user_message)
 
-    if lowered == '':
-        return ('Você pode rolar diferentes tipos de dados:man_mage:, basta digitar ! mais:\n d 4;\n d 6;\n '
-                'd 8;\n d 10;\n d 12;\n d 20;\n d 100 ')
+        # Verifica se o embed é válido
+        if embed:
+            try:
+                await ctx.send(embed=embed)
+            except discord.errors.HTTPException as e:
+                # Log específico para erro HTTP
+                print(f'Erro HTTP ao enviar mensagem: {e}')
+            except Exception as e:
+                # Log para outros tipos de erros
+                print(f'Erro ao enviar mensagem: {e}')
+        else:
+            print('(Resposta vazia não enviada)')
 
-    if '100' in lowered:
-        return f'd100🎲 deu {randint(1, 100)}'
-    elif '20' in lowered:
-        return f'd20🎲 deu {randint(1, 20)}'
-    elif '12' in lowered:
-        return f'd12🎲 deu {randint(1, 12)}'
-    elif '10' in lowered:
-        return f'd10🎲 deu {randint(1, 10)}'
-    elif '8' in lowered:
-        return f'd8🎲 deu {randint(1, 8)}'
-    elif '6' in lowered:
-        return f'd6🎲 deu {randint(1, 6)}'
-    elif '4' in lowered:
-        return f'd4🎲 deu {randint(1, 4)}'
+    def get_response_embed(self, user_input: str) -> discord.Embed:
+        lowered = user_input.lower()
+        embed = discord.Embed(color=discord.Color.blue())
 
-def setup(bot: commands.Bot):
-    bot.add_command(dado_command)
+        if lowered == '':
+            embed.title = "Tipos de Dados"
+            embed.description = ('Você pode rolar diferentes tipos de dados, basta digitar `!dado` seguido de:\n'
+                                 '- dado 4\n'
+                                 '- dado 6\n'
+                                 '- dado 8\n'
+                                 '- dado 10\n'
+                                 '- dado 12\n'
+                                 '- dado 20\n'
+                                 '- dado 100')
+            return embed
+
+        if '100' in lowered:
+            embed.title = "Rolagem de d100"
+            embed.description = f'Resultado: {randint(1, 100)} 🎲'
+            return embed
+        elif '20' in lowered:
+            embed.title = "Rolagem de d20"
+            embed.description = f'Resultado: {randint(1, 20)} 🎲'
+            return embed
+        elif '12' in lowered:
+            embed.title = "Rolagem de d12"
+            embed.description = f'Resultado: {randint(1, 12)} 🎲'
+            return embed
+        elif '10' in lowered:
+            embed.title = "Rolagem de d10"
+            embed.description = f'Resultado: {randint(1, 10)} 🎲'
+            return embed
+        elif '8' in lowered:
+            embed.title = "Rolagem de d8"
+            embed.description = f'Resultado: {randint(1, 8)} 🎲'
+            return embed
+        elif '6' in lowered:
+            embed.title = "Rolagem de d6"
+            embed.description = f'Resultado: {randint(1, 6)} 🎲'
+            return embed
+        elif '4' in lowered:
+            embed.title = "Rolagem de d4"
+            embed.description = f'Resultado: {randint(1, 4)} 🎲'
+            return embed
+
+        return None
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Dado(bot))
+    print("Comando dado registrado.")

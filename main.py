@@ -1,41 +1,38 @@
-import os
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
-from Modules import registro
-from Modules import boas_vindas
-from Modules import responses
-from Modules import socorro
-from Modules import dado
 
-
-# Carregar variáveis de ambiente
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-
-# Configurar intents
 intents = discord.Intents.default()
 intents.message_content = True
+intents.reactions = True
+intents.guilds = True
 intents.members = True
 
-# Inicializar o bot
-client = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 
-@client.event
+async def load_extensions():
+    initial_extensions = [
+        'Modules.registro_cog',
+        'Modules.BoasVindas',
+        'Modules.JogoQuiz',
+        'Modules.SlotMachine',
+        'Modules.dado',
+        'Modules.responses',
+        'Modules.socorro'
+    ]
+
+    for extension in initial_extensions:
+        try:
+            await bot.load_extension(extension)
+            print(f"Loaded {extension}")
+        except Exception as e:
+            print(f"Failed to load extension {extension}: {e}")
+
+
+@bot.event
 async def on_ready():
-    print(f'{client.user} está online!')
+    print(f'Logged in as {bot.user.name}')
+    await load_extensions()
 
 
-# Registrar funcionalidades dos módulos
-registro.setup(client)
-boas_vindas.setup(client)
-responses.setup(client)
-socorro.setup(client)
-dado.setup(client)
-def main():
-    client.run(TOKEN)
-
-
-if __name__ == '__main__':
-    main()
+bot.run('token')
